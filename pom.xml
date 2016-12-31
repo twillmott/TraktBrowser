@@ -10,6 +10,8 @@
     <name>traktbrowser Maven Webapp</name>
     <url>http://maven.apache.org</url>
 
+
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -39,6 +41,19 @@
             <groupId>com.uwetrottmann.trakt5</groupId>
             <artifactId>trakt-java</artifactId>
             <version>5.4.0</version>
+        </dependency>
+
+        <!--Database stuff-->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.193</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>21.0-rc1</version>
         </dependency>
 
     </dependencies>
