@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 
 <head>
 
@@ -98,26 +99,20 @@
                             <table class="table table-bordered table-hover">
                                 <thead>
                                 <tr>
-                                    <th>TV Show</th>
+                                    <th>Series</th>
                                     <th>Seasons</th>
                                     <th>Continuing</th>
                                     <th>Watched</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                <tr>
-                                    <td>Breaking Bad</td>
-                                    <td>4</td>
-                                    <td>No</td>
-                                    <td>Yes</td>
-                                </tr>
-                                <tr>
-                                    <td>New Girl</td>
-                                    <td>8</td>
-                                    <td>Yes</td>
-                                    <td>No</td>
-                                </tr>
-                                </tbody>
+                                    <tbody>
+                                    <tr th:each="show : ${series}">
+                                        <td th:text="${show.name}">&nbsp;</td>
+                                        <td th:text="${show.seasons}">&nbsp;</td>
+                                        <td th:text="${show.continuing}">&nbsp;</td>
+                                        <td th:text="${show.watched}">&nbsp;</td>
+                                    </tr>
+                                    </tbody>
                             </table>
                         </div>
                     </div>
