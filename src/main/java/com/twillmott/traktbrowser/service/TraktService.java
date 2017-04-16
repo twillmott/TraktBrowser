@@ -1,7 +1,6 @@
 package com.twillmott.traktbrowser.service;
 
-import com.google.inject.Inject;
-import com.twillmott.traktbrowser.dao.AccessTokenDao;
+import com.twillmott.traktbrowser.dao.AccessTokenRepository;
 import com.uwetrottmann.trakt5.TraktV2;
 import com.uwetrottmann.trakt5.entities.AccessToken;
 import com.uwetrottmann.trakt5.entities.BaseShow;
@@ -38,18 +37,21 @@ public class TraktService {
     // Library used to communicate with trakt.
     private TraktV2 trakt = new TraktV2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 
-    AccessTokenDao accessTokenDao;
+    AccessTokenRepository accessTokenDao;
 
     Log log = LogFactory.getLog(TraktService.class);
 
     // TODO use the refresh token to refresh our access token.
     @Autowired
-    public TraktService(AccessTokenDao accessTokenDao) {
+    public TraktService(AccessTokenRepository accessTokenDao) {
         this.accessTokenDao = accessTokenDao;
         // Try getting the access token from the database. If we don't have one, we'll have to authenticate.
-        accessToken = accessTokenDao.getAccessToken();
-        trakt.accessToken(accessToken.access_token);
-        trakt.refreshToken(accessToken.refresh_token);
+
+        if (!accessTokenDao.findAll().isEmpty()) {
+            accessToken = accessTokenDao.findAll().get(0).mapToTraktToken();
+            trakt.accessToken(accessToken.access_token);
+            trakt.refreshToken(accessToken.refresh_token);
+        }
     }
 
 
@@ -76,8 +78,9 @@ public class TraktService {
 
             if (accessTokenResponse.isSuccessful()) {
                 accessToken = accessTokenResponse.body();
-                AccessToken at = accessTokenDao.getAccessToken();
-                accessTokenDao.saveAccessToken(accessToken);
+                // Every time we add a new access token, we want to delete the existing on out of the database.
+                accessTokenDao.deleteAll();
+                accessTokenDao.save(com.twillmott.traktbrowser.dao.AccessToken.mapFromTraktToken(accessToken));
                 return accessToken;
             }
         } catch (IOException e) {
@@ -90,6 +93,9 @@ public class TraktService {
      * Whether or not this application is authenticated.
      */
     public boolean isAuthenticated() {
+        if (accessToken == null) {
+            return false;
+        }
         return accessToken.access_token != null;
     }
 
