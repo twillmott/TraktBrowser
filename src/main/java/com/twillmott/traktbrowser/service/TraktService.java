@@ -1,5 +1,6 @@
 package com.twillmott.traktbrowser.service;
 
+import com.google.inject.Inject;
 import com.twillmott.traktbrowser.dao.AccessTokenDao;
 import com.uwetrottmann.trakt5.TraktV2;
 import com.uwetrottmann.trakt5.entities.AccessToken;
@@ -10,6 +11,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import retrofit2.Response;
 
 import java.io.IOException;
@@ -21,6 +24,7 @@ import java.util.List;
  *
  * Created by tomwi on 07/12/2016.
  */
+@Component
 public class TraktService {
 
     // The access token that holds the trakt authentication.
@@ -34,12 +38,14 @@ public class TraktService {
     // Library used to communicate with trakt.
     private TraktV2 trakt = new TraktV2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 
-    AccessTokenDao accessTokenDao = new AccessTokenDao();
+    AccessTokenDao accessTokenDao;
 
     Log log = LogFactory.getLog(TraktService.class);
 
     // TODO use the refresh token to refresh our access token.
-    public TraktService() {
+    @Autowired
+    public TraktService(AccessTokenDao accessTokenDao) {
+        this.accessTokenDao = accessTokenDao;
         // Try getting the access token from the database. If we don't have one, we'll have to authenticate.
         accessToken = accessTokenDao.getAccessToken();
         trakt.accessToken(accessToken.access_token);

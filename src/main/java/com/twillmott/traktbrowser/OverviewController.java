@@ -1,12 +1,15 @@
 package com.twillmott.traktbrowser;
 
 
+import com.google.inject.Inject;
 import com.twillmott.traktbrowser.service.TraktService;
 import com.uwetrottmann.trakt5.entities.AccessToken;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import sun.security.timestamp.TSRequest;
 
 
 /**
@@ -17,9 +20,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class OverviewController {
 
-    private TraktService traktService = new TraktService();
+    private TraktService traktService;
 
     private int i = 0;
+
+    @Autowired
+    OverviewController(TraktService traktService){
+        this.traktService = traktService;
+    }
 
     /**
      * Main entry point to the overview application. Checks for authentication.

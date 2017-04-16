@@ -1,10 +1,12 @@
 package com.twillmott.traktbrowser;
 
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 import com.twillmott.traktbrowser.model.Series;
 import com.twillmott.traktbrowser.service.FileScanner;
 import com.twillmott.traktbrowser.service.TraktService;
 import com.uwetrottmann.trakt5.entities.BaseShow;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +21,12 @@ import java.util.List;
 @Controller
 public class SeriesController {
 
-    TraktService traktService = new TraktService();
+    TraktService traktService;
+
+    @Autowired
+    SeriesController(TraktService traktService) {
+        this.traktService = traktService;
+    }
 
     @RequestMapping(value = "/tvshows", method = RequestMethod.GET)
     public String greeting(Model model) {

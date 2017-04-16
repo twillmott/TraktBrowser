@@ -1,6 +1,7 @@
 package com.twillmott.traktbrowser.dao;
 
 import com.uwetrottmann.trakt5.entities.AccessToken;
+import org.springframework.stereotype.Component;
 
 import java.sql.*;
 
@@ -8,6 +9,7 @@ import java.sql.*;
  * Database access layer for the Trakt access token table.
  * Created by tomwi on 30/12/2016.
  */
+@Component
 public class AccessTokenDao {
     private static final String DB_DRIVER = "org.h2.Driver";
     private static final String DB_CONNECTION = "jdbc:h2:~/traktbrowser";
