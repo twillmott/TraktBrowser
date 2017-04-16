@@ -1,12 +1,9 @@
-package com.twillmott.traktbrowser.entity;
+package com.twillmott.traktbrowser.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
- * Database entity to hold all details of a series (TV Show).
+ * Database domain to hold all details of a series (TV Show).
  * Created by tomw on 16/04/2017.
  */
 @Entity
@@ -23,8 +20,12 @@ public class Series {
 
     private String overview;
 
+    @OneToOne
+    @JoinColumn(name = "external_ids_id")
     private ExternalIds externalIds;
 
+    @OneToOne
+    @JoinColumn(name = "images_id")
     private Images images;
 
     /**

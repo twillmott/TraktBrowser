@@ -1,4 +1,4 @@
-package com.twillmott.traktbrowser.entity;
+package com.twillmott.traktbrowser.domain;
 
 import org.joda.time.DateTime;
 
@@ -20,12 +20,17 @@ public class Episode {
     private String title;
 
     @OneToOne
+    @JoinColumn(name = "season_id")
     private Season season;
 
     private String overview;
 
+    @OneToOne
+    @JoinColumn(name = "external_ids_id")
     private ExternalIds externalIds;
 
+    @OneToOne
+    @JoinColumn(name = "images_id")
     private Images images;
 
     private DateTime lastWatched;

@@ -1,4 +1,4 @@
-package com.twillmott.traktbrowser.entity;
+package com.twillmott.traktbrowser.domain;
 
 import javax.persistence.*;
 
@@ -13,6 +13,8 @@ public class Season {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
+    @OneToOne
+    @JoinColumn(name = "external_ids_id")
     private ExternalIds externalIds;
 
     private int seasonNumber;
@@ -21,8 +23,11 @@ public class Season {
      * The series which this season belongs to.
      */
     @OneToOne
+    @JoinColumn(name = "series_id")
     private Series series;
 
+    @OneToOne
+    @JoinColumn(name = "images_id")
     private Images images;
 
 

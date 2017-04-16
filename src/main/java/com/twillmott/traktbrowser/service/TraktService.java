@@ -80,7 +80,7 @@ public class TraktService {
                 accessToken = accessTokenResponse.body();
                 // Every time we add a new access token, we want to delete the existing on out of the database.
                 accessTokenDao.deleteAll();
-                accessTokenDao.save(com.twillmott.traktbrowser.entity.AccessToken.mapFromTraktToken(accessToken));
+                accessTokenDao.save(com.twillmott.traktbrowser.domain.AccessToken.mapFromTraktToken(accessToken));
                 return accessToken;
             }
         } catch (IOException e) {

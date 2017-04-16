@@ -1,4 +1,4 @@
-package com.twillmott.traktbrowser.entity;
+package com.twillmott.traktbrowser.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

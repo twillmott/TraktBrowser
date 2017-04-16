@@ -1,5 +1,6 @@
-package com.twillmott.traktbrowser.entity;
+package com.twillmott.traktbrowser.domain;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -9,6 +10,7 @@ import javax.persistence.Id;
  * Currently, this table only stores URL references to images. TODO Change this to save the images themselves.
  * Created by tomw on 16/04/2017.
  */
+@Entity
 public class Images {
 
     @Id

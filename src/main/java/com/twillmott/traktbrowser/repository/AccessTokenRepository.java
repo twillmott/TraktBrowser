@@ -1,6 +1,6 @@
 package com.twillmott.traktbrowser.repository;
 
-import com.twillmott.traktbrowser.entity.AccessToken;
+import com.twillmott.traktbrowser.domain.AccessToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

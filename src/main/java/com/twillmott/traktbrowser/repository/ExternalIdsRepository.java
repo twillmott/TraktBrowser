@@ -1,6 +1,6 @@
 package com.twillmott.traktbrowser.repository;
 
-import com.twillmott.traktbrowser.entity.ExternalIds;
+import com.twillmott.traktbrowser.domain.ExternalIds;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
