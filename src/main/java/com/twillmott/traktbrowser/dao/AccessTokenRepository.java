@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.*;
 
 /**
- * Database access layer for the Trakt access token table.
+ * Database repository for the Trakt access token table.
  * Created by tomwi on 30/12/2016.
  */
 @Repository
