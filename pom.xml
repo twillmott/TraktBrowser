@@ -36,6 +36,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>4.3.7.RELEASE</version>
+        </dependency>
+
         <!--Trakt Library-->
         <dependency>
             <groupId>com.uwetrottmann.trakt5</groupId>
@@ -50,10 +56,18 @@
             <version>1.4.193</version>
         </dependency>
 
+        <!--Google Guava-->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>21.0-rc1</version>
+        </dependency>
+
+        <!--Google Guice-->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>4.1.0</version>
         </dependency>
 
     </dependencies>
