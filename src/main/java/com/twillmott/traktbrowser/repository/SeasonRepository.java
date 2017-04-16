@@ -1,5 +1,6 @@
-package com.twillmott.traktbrowser.dao;
+package com.twillmott.traktbrowser.repository;
 
+import com.twillmott.traktbrowser.entity.Season;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

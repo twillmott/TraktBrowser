@@ -1,4 +1,4 @@
-package com.twillmott.traktbrowser.dao;
+package com.twillmott.traktbrowser.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,7 +29,7 @@ public class AccessToken {
         this.expires_in = expires_in;
         this.refresh_token = refresh_token;
         this.scope = scope;
-    };
+    }
 
     public long getId() {
         return id;

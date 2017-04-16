@@ -1,6 +1,6 @@
 package com.twillmott.traktbrowser.service;
 
-import com.twillmott.traktbrowser.dao.AccessTokenRepository;
+import com.twillmott.traktbrowser.repository.AccessTokenRepository;
 import com.uwetrottmann.trakt5.TraktV2;
 import com.uwetrottmann.trakt5.entities.AccessToken;
 import com.uwetrottmann.trakt5.entities.BaseShow;
@@ -80,7 +80,7 @@ public class TraktService {
                 accessToken = accessTokenResponse.body();
                 // Every time we add a new access token, we want to delete the existing on out of the database.
                 accessTokenDao.deleteAll();
-                accessTokenDao.save(com.twillmott.traktbrowser.dao.AccessToken.mapFromTraktToken(accessToken));
+                accessTokenDao.save(com.twillmott.traktbrowser.entity.AccessToken.mapFromTraktToken(accessToken));
                 return accessToken;
             }
         } catch (IOException e) {
@@ -93,10 +93,7 @@ public class TraktService {
      * Whether or not this application is authenticated.
      */
     public boolean isAuthenticated() {
-        if (accessToken == null) {
-            return false;
-        }
-        return accessToken.access_token != null;
+        return accessToken!=null && accessToken.access_token != null;
     }
 
     /**

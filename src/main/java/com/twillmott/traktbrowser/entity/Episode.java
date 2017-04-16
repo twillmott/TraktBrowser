@@ -1,4 +1,4 @@
-package com.twillmott.traktbrowser.dao;
+package com.twillmott.traktbrowser.entity;
 
 import org.joda.time.DateTime;
 
@@ -28,11 +28,11 @@ public class Episode {
 
     private Images images;
 
-    DateTime lastWatched;
+    private DateTime lastWatched;
 
-    DateTime lastCollected;
+    private DateTime lastCollected;
 
-    DateTime airedOn;
+    private DateTime airedOn;
 
     public Episode() {}
 

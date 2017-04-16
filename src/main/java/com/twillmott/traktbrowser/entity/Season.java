@@ -1,4 +1,4 @@
-package com.twillmott.traktbrowser.dao;
+package com.twillmott.traktbrowser.entity;
 
 import javax.persistence.*;
 
