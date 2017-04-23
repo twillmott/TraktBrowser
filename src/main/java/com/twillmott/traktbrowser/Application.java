@@ -3,6 +3,7 @@ package com.twillmott.traktbrowser;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * The spring boot application class used to
@@ -16,7 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
  * Created by tomwi on 07/12/2016.
  */
 @SpringBootApplication
-//@ComponentScan(basePackages = {"org.dozer.Mapper"})
+@ComponentScan(basePackages = {"com.twillmott.traktbrowser"})
 public class Application {
 
     public static void main(String[] args) {

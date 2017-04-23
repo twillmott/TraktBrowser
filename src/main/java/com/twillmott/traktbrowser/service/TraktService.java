@@ -45,16 +45,16 @@ public class TraktService {
 
     // Injected dependencies
     AccessTokenRepository accessTokenDao;
-//    Mapper mapper;
+    Mapper mapper;
     SeriesRepository seriesRepository;
 
     Log log = LogFactory.getLog(TraktService.class);
 
     // TODO use the refresh token to refresh our access token.
     @Autowired
-    public TraktService(AccessTokenRepository accessTokenDao, SeriesRepository seriesRepository) {
+    public TraktService(AccessTokenRepository accessTokenDao, Mapper mapper, SeriesRepository seriesRepository) {
         this.accessTokenDao = accessTokenDao;
-//        this.mapper = mapper;
+        this.mapper = mapper;
         this.seriesRepository = seriesRepository;
         // Try getting the access token from the database. If we don't have one, we'll have to authenticate.
         if (!accessTokenDao.findAll().isEmpty()) {

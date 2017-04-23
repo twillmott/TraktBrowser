@@ -1,4 +1,4 @@
-package com.twillmott.traktbrowser;
+package com.twillmott.traktbrowser.controller;
 
 
 import com.twillmott.traktbrowser.service.TraktService;

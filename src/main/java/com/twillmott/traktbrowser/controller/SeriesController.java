@@ -1,4 +1,4 @@
-package com.twillmott.traktbrowser;
+package com.twillmott.traktbrowser.controller;
 
 import com.google.common.collect.Lists;
 import com.twillmott.traktbrowser.model.Series;
