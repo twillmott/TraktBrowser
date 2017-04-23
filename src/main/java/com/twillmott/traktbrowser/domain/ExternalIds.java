@@ -1,5 +1,8 @@
 package com.twillmott.traktbrowser.domain;
 
+import com.uwetrottmann.trakt5.entities.EpisodeIds;
+import org.dozer.Mapping;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,10 +19,15 @@ public class ExternalIds {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
+    @Mapping(value = "trakt")
     private Integer traktId;
+    @Mapping(value = "tmdb")
     private Integer tmdbId;
+    @Mapping(value = "tvdb")
     private Integer tvdbId;
+    @Mapping(value = "tvrage")
     private Integer tvrageId;
+    @Mapping(value = "imdb")
     private String imdbId;
 
     public ExternalIds() {}
@@ -78,5 +86,25 @@ public class ExternalIds {
 
     public void setImdbId(String imdbId) {
         this.imdbId = imdbId;
+    }
+
+    public static EpisodeIds mapToTraktIds(ExternalIds input) {
+        EpisodeIds output = new EpisodeIds();
+        output.tvdb = input.getTvdbId();
+        output.tvrage = input.getTvrageId();
+        output.imdb = input.imdbId;
+        output.trakt = input.getTraktId();
+        output.tmdb = input.getTmdbId();
+        return output;
+    }
+
+    public static ExternalIds mapFromTraktIds(EpisodeIds input) {
+        ExternalIds output = new ExternalIds();
+        output.setImdbId(input.imdb);
+        output.setTmdbId(input.tmdb);
+        output.setTraktId(input.trakt);
+        output.setTvdbId(input.tvdb);
+        output.setTvrageId(input.tvrage);
+        return output;
     }
 }

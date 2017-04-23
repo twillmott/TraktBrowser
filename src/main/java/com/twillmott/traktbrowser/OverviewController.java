@@ -1,7 +1,6 @@
 package com.twillmott.traktbrowser;
 
 
-import com.google.inject.Inject;
 import com.twillmott.traktbrowser.service.TraktService;
 import com.uwetrottmann.trakt5.entities.AccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import sun.security.timestamp.TSRequest;
 
 
 /**
@@ -66,7 +64,4 @@ public class OverviewController {
     public String authFailure() {
         return null;
     }
-
-
-
 }

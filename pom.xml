@@ -48,7 +48,7 @@
             <version>5.4.0</version>
         </dependency>
 
-        <!--Database stuff-->
+        <!--H2 Database - This will probably be changed -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -61,10 +61,11 @@
             <version>21.0-rc1</version>
         </dependency>
 
+        <!--Dozer is used for mapping objects -->
         <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>4.1.0</version>
+            <groupId>net.sf.dozer</groupId>
+            <artifactId>dozer</artifactId>
+            <version>5.5.1</version>
         </dependency>
     </dependencies>
 
