@@ -4,9 +4,12 @@ import com.twillmott.traktbrowser.domain.Episode;
 import com.twillmott.traktbrowser.domain.Season;
 import com.twillmott.traktbrowser.domain.Series;
 import com.twillmott.traktbrowser.repository.AccessTokenRepository;
+import com.twillmott.traktbrowser.repository.EpisodeRepository;
+import com.twillmott.traktbrowser.repository.SeasonRepository;
 import com.twillmott.traktbrowser.repository.SeriesRepository;
 import com.uwetrottmann.trakt5.TraktV2;
 import com.uwetrottmann.trakt5.entities.AccessToken;
+import com.uwetrottmann.trakt5.entities.BaseEpisode;
 import com.uwetrottmann.trakt5.entities.BaseShow;
 import com.uwetrottmann.trakt5.entities.UserSlug;
 import com.uwetrottmann.trakt5.enums.Extended;
@@ -16,7 +19,6 @@ import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import retrofit2.Response;
@@ -44,18 +46,22 @@ public class TraktService {
     private TraktV2 trakt = new TraktV2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 
     // Injected dependencies
-    AccessTokenRepository accessTokenDao;
-    Mapper mapper;
-    SeriesRepository seriesRepository;
+    private AccessTokenRepository accessTokenDao;
+    private Mapper mapper;
+    private SeriesRepository seriesRepository;
+    private SeasonRepository seasonRepository;
+    private EpisodeRepository episodeRepository;
 
     Log log = LogFactory.getLog(TraktService.class);
 
     // TODO use the refresh token to refresh our access token.
     @Autowired
-    public TraktService(AccessTokenRepository accessTokenDao, Mapper mapper, SeriesRepository seriesRepository) {
+    public TraktService(AccessTokenRepository accessTokenDao, Mapper mapper, SeriesRepository seriesRepository, SeasonRepository seasonRepository, EpisodeRepository episodeRepository) {
         this.accessTokenDao = accessTokenDao;
         this.mapper = mapper;
         this.seriesRepository = seriesRepository;
+        this.seasonRepository = seasonRepository;
+        this.episodeRepository = episodeRepository;
         // Try getting the access token from the database. If we don't have one, we'll have to authenticate.
         if (!accessTokenDao.findAll().isEmpty()) {
             accessToken = accessTokenDao.findAll().get(0).mapToTraktToken();
@@ -109,61 +115,41 @@ public class TraktService {
     }
 
     /**
-     * @return All of this users watched shows.
+     * Go through the database, and the watched status of all Series, Seasons and Episodes.
      */
     @Async
-    public void synchronizeSeries() {
-        // Get all of the users shows, with the minimum information.
-        // Get the users watchlist
-        List<BaseShow> watchlistShows = getShowWatchlist();
-        // Get the users watched shows.
+    public void synchronizeSeriesWatchStatus() {
+
+        // Delete all watched info.
+        // TODO
+
+        // Get all the users watched series.
         List<BaseShow> watchedShows = getShowWatched();
-        // Get the users collection.
-        List<BaseShow> collectedShows = getShowCollection();
 
-        // Merge all the shows in to one list.
-        List<BaseShow> mergedShows = mergeShows(true, watchlistShows, watchedShows, collectedShows);
+        // Loop through all watched series
+        for (BaseShow traktShow : watchedShows) {
 
-        List<Series> series = new ArrayList<>();
-        for (BaseShow traktShow : mergedShows) {
+            // Load the series and mark it was watched.
+            Series series = seriesRepository.findByExternalIds_TraktId(traktShow.show.ids.trakt).get(0);
+            series.setLastWatched(traktShow.last_watched_at);
+            series.setPlays(traktShow.plays);
+            seriesRepository.save(series);
 
-            // Get the extra details of the show. Trakt doesn't give all details in the one api call.
-            BaseShow fullShow = combineBaseShows(traktShow, getShowWatchedProgress(traktShow.show.ids.trakt.toString()));
+            // Loop through all seasons
+            for (com.uwetrottmann.trakt5.entities.BaseSeason traktSeason : traktShow.seasons) {
 
-            // Get all of the seasons for the show
-            List<com.uwetrottmann.trakt5.entities.Season> traktSeasons = new ArrayList<>();
-            try {
-                traktSeasons = trakt.seasons().summary(traktShow.show.ids.trakt.toString(), Extended.DEFAULT_MIN).execute().body();
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }
+                // Trakt library doesn't give season watched info, so can't update that.
+                Season season = seasonRepository.findBySeriesAndSeasonNumber(series, traktSeason.number).get(0);
 
-            List<Season> seasons = new ArrayList<>();
-            // Go through each season and get its episodes
-            for (com.uwetrottmann.trakt5.entities.Season traktSeason : traktSeasons) {
-                if (traktSeason.number != 0) {
-
-                    List<com.uwetrottmann.trakt5.entities.Episode> traktEpisodes = new ArrayList<>();
-                    try {
-                        traktEpisodes = trakt.seasons().season(traktShow.show.ids.trakt.toString(), traktSeason.number, Extended.DEFAULT_MIN).execute().body();
-                    } catch (Exception e) {
-                        log.error(e.getMessage());
-                    }
-
-                    List<Episode> episodeModels = new ArrayList<>();
-                    for (com.uwetrottmann.trakt5.entities.Episode traktEpisode : traktEpisodes) {
-//                        episodeModels.add(mapper.map(traktEpisode, Episode.class));
-                    }
-
-//                    seasons.add(mapper.map(traktSeason, Season.class));
+                // Loop through all the episodes in this season
+                for (BaseEpisode traktEpisode : traktSeason.episodes) {
+                    Episode episode = episodeRepository.findBySeasonAndEpisodeNumber(season, traktEpisode.number).get(0);
+                    episode.setLastWatched(traktEpisode.last_watched_at);
+                    episode.setPlays(traktEpisode.plays);
+                    episodeRepository.save(episode);
                 }
             }
-
-//            series.add(mapper.map(fullShow, Series.class));
         }
-
-        seriesRepository.save(series);
-
     }
 
 
@@ -172,7 +158,7 @@ public class TraktService {
      */
     private List<BaseShow> getShowWatchlist() {
         try {
-            Response<List<BaseShow>> response = trakt.users().watchlistShows(UserSlug.ME, Extended.DEFAULT_MIN).execute();
+            Response<List<BaseShow>> response = trakt.users().watchlistShows(UserSlug.ME, Extended.FULLEPISODES).execute();
             if (response.isSuccessful()) {
                 return response.body();
             }
@@ -208,7 +194,7 @@ public class TraktService {
      */
     private List<BaseShow> getShowCollection() {
         try {
-            Response<List<BaseShow>> response = trakt.users().collectionShows(UserSlug.ME, Extended.DEFAULT_MIN).execute();
+            Response<List<BaseShow>> response = trakt.users().collectionShows(UserSlug.ME, Extended.FULL).execute();
             if (response.isSuccessful()) {
                 return response.body();
             }

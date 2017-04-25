@@ -1,5 +1,7 @@
 package com.twillmott.traktbrowser.domain;
 
+import org.joda.time.DateTime;
+
 import javax.persistence.*;
 
 /**
@@ -33,6 +35,20 @@ public class Series {
      * Cross referencing table
      */
     private Long nextEpisode;
+
+    private DateTime lastWatched;
+
+    private boolean completed;
+
+    private int plays;
+
+    public int getPlays() {
+        return plays;
+    }
+
+    public void setPlays(int plays) {
+        this.plays = plays;
+    }
 
     public Series() {}
 
@@ -90,5 +106,21 @@ public class Series {
 
     public void setNextEpisode(Long nextEpisode) {
         this.nextEpisode = nextEpisode;
+    }
+
+    public DateTime getLastWatched() {
+        return lastWatched;
+    }
+
+    public void setLastWatched(DateTime lastWatched) {
+        this.lastWatched = lastWatched;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 }

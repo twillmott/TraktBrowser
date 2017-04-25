@@ -34,14 +34,32 @@ public class Episode {
     @JoinColumn(name = "images_id")
     private Images images;
 
-    @Mapping(value = "last_watched_at")
+//    @Mapping(value = "last_watched_at")
     private DateTime lastWatched;
 
-    @Mapping(value = "collected_at")
+//    @Mapping(value = "collected_at")
     private DateTime lastCollected;
 
     @Mapping(value = "first_aired")
     private DateTime airedOn;
+
+    private int plays;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public int getPlays() {
+        return plays;
+    }
+
+    public void setPlays(int plays) {
+        this.plays = plays;
+    }
 
     public Episode() {}
 

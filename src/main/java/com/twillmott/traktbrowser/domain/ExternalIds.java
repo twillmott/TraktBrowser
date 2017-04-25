@@ -3,10 +3,7 @@ package com.twillmott.traktbrowser.domain;
 import com.uwetrottmann.trakt5.entities.EpisodeIds;
 import org.dozer.Mapping;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Entity to hold external identifier for a number of providers for both
