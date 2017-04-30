@@ -1,5 +1,6 @@
 package com.twillmott.traktbrowser.domain;
 
+import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -36,6 +37,7 @@ public class Series {
      */
     private Long nextEpisode;
 
+    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime lastWatched;
 
     private boolean completed;

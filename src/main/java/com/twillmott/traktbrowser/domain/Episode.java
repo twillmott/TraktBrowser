@@ -1,6 +1,7 @@
 package com.twillmott.traktbrowser.domain;
 
 import org.dozer.Mapping;
+import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -35,12 +36,15 @@ public class Episode {
     private Images images;
 
 //    @Mapping(value = "last_watched_at")
+    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime lastWatched;
 
 //    @Mapping(value = "collected_at")
+    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime lastCollected;
 
     @Mapping(value = "first_aired")
+    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime airedOn;
 
     private int plays;
