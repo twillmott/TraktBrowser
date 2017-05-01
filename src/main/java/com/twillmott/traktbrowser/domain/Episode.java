@@ -35,11 +35,9 @@ public class Episode {
     @JoinColumn(name = "images_id")
     private Images images;
 
-//    @Mapping(value = "last_watched_at")
     @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime lastWatched;
 
-//    @Mapping(value = "collected_at")
     @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime lastCollected;
 
@@ -150,28 +148,4 @@ public class Episode {
     public void setAiredOn(DateTime airedOn) {
         this.airedOn = airedOn;
     }
-
-//    public static com.uwetrottmann.trakt5.entities.Episode mapToTraktEpisode(Episode input) {
-//        com.uwetrottmann.trakt5.entities.Episode output = new com.uwetrottmann.trakt5.entities.Episode();
-//        output.title = input.getTitle();
-//        output.season = input.getSeason();
-//        output.overview = input.getOverview();
-//        output.ids = ExternalIds.mapToTraktIds(input.getExternalIds());
-//        output.
-//        output.first_aired = input.getAiredOn();
-//
-//        this.episodeNumber = episodeNumber;
-//        this.title = title;
-//        this.season = season;
-//        this.overview = overview;
-//        this.externalIds = externalIds;
-//        this.images = images;
-//        this.lastWatched = lastWatched;
-//        this.lastCollected = lastCollected;
-//        this.airedOn = airedOn;
-//
-//
-//    public Episode mapFromTraktEpisode() {
-//        return null;
-//    }
 }

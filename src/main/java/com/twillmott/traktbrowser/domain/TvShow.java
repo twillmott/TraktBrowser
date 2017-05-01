@@ -10,7 +10,7 @@ import javax.persistence.*;
  * Created by tomw on 16/04/2017.
  */
 @Entity
-public class Series {
+public class TvShow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -52,9 +52,9 @@ public class Series {
         this.plays = plays;
     }
 
-    public Series() {}
+    public TvShow() {}
 
-    public Series(String title, String overview, ExternalIds externalIds, Images images, Long nextEpisode) {
+    public TvShow(String title, String overview, ExternalIds externalIds, Images images, Long nextEpisode) {
         this.title = title;
         this.overview = overview;
         this.externalIds = externalIds;

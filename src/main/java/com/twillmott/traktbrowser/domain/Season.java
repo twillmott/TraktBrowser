@@ -20,11 +20,11 @@ public class Season {
     private int seasonNumber;
 
     /**
-     * The series which this season belongs to.
+     * The tvShow which this season belongs to.
      */
     @OneToOne
     @JoinColumn(name = "series_id")
-    private Series series;
+    private TvShow tvShow;
 
     @OneToOne
     @JoinColumn(name = "images_id")
@@ -33,10 +33,10 @@ public class Season {
 
     public Season() {}
 
-    public Season(ExternalIds externalIds, int seasonNumber, Series series, Images images) {
+    public Season(ExternalIds externalIds, int seasonNumber, TvShow tvShow, Images images) {
         this.externalIds = externalIds;
         this.seasonNumber = seasonNumber;
-        this.series = series;
+        this.tvShow = tvShow;
         this.images = images;
     }
 
@@ -64,12 +64,12 @@ public class Season {
         this.seasonNumber = seasonNumber;
     }
 
-    public Series getSeries() {
-        return series;
+    public TvShow getTvShow() {
+        return tvShow;
     }
 
-    public void setSeries(Series series) {
-        this.series = series;
+    public void setTvShow(TvShow tvShow) {
+        this.tvShow = tvShow;
     }
 
     public Images getImages() {

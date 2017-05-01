@@ -3,7 +3,7 @@ package com.twillmott.traktbrowser.model;
 /**
  * Created by tomw on 12/02/2017.
  */
-public class Series {
+public class TvShow {
 
     private String name;
     private int seasons;

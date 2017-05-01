@@ -84,24 +84,4 @@ public class ExternalIds {
     public void setImdbId(String imdbId) {
         this.imdbId = imdbId;
     }
-
-    public static EpisodeIds mapToTraktIds(ExternalIds input) {
-        EpisodeIds output = new EpisodeIds();
-        output.tvdb = input.getTvdbId();
-        output.tvrage = input.getTvrageId();
-        output.imdb = input.imdbId;
-        output.trakt = input.getTraktId();
-        output.tmdb = input.getTmdbId();
-        return output;
-    }
-
-    public static ExternalIds mapFromTraktIds(EpisodeIds input) {
-        ExternalIds output = new ExternalIds();
-        output.setImdbId(input.imdb);
-        output.setTmdbId(input.tmdb);
-        output.setTraktId(input.trakt);
-        output.setTvdbId(input.tvdb);
-        output.setTvrageId(input.tvrage);
-        return output;
-    }
 }

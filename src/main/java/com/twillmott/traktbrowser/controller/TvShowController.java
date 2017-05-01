@@ -1,8 +1,7 @@
 package com.twillmott.traktbrowser.controller;
 
 import com.google.common.collect.Lists;
-import com.twillmott.traktbrowser.model.Series;
-import com.twillmott.traktbrowser.repository.SeriesRepository;
+import com.twillmott.traktbrowser.model.TvShow;
 import com.twillmott.traktbrowser.service.FileScanner;
 import com.twillmott.traktbrowser.service.TraktService;
 import com.twillmott.traktbrowser.service.TvService;
@@ -18,54 +17,61 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * Controller for handling interaction with the TV Show/Series page.
+ * Controller for handling interaction with the TV Show/TvShow page.
  * Created by tomwi on 30/12/2016.
  */
 @Controller
-public class SeriesController {
+public class TvShowController {
 
-    TraktService traktService;
-    TvService tvService;
+    // Injected dependencies
+    private TraktService traktService;
+    private TvService tvService;
 
     @Autowired
-    SeriesController(TraktService traktService, TvService tvService) {
+    TvShowController(TraktService traktService, TvService tvService) {
         this.traktService = traktService;
         this.tvService = tvService;
     }
 
+
+    /**
+     * Mapping for the root of the tv shows page.
+     */
     @RequestMapping(value = "/tvshows", method = RequestMethod.GET)
     public String greeting(Model model) {
 //        FileScanner fs = new FileScanner();
 //        fs.getTvShows();
-//        traktService.synchronizeSeriesWatchStatus();
+//        traktService.synchronizeTvShowWatchStatus();
 
         // Scan for tv shows on the drive
-        FileScanner fileScanner = new FileScanner();
-        fileScanner.getTvShows();
+        FileScanner.getTvShows();
 
         // Populate the screen with all watched shows
-        List<com.twillmott.traktbrowser.domain.Series> userSeriesList = tvService.getAllUserSeries(false);
-        List<Series> seriesModels = Lists.newArrayList();
+        List<com.twillmott.traktbrowser.domain.TvShow> tvShows = tvService.getAllUserTvShows(false);
+        List<TvShow> tvShowModels = Lists.newArrayList();
 
-        for ( com.twillmott.traktbrowser.domain.Series userSeries : userSeriesList) {
-            Series seriesModel = new Series();
-            seriesModel.setName(userSeries.getTitle());
-            seriesModel.setWatched(userSeries.getLastWatched() != null);
-            seriesModel.setSeasons(tvService.getAllSeasonsForSeries(userSeries, false).size());
-            seriesModels.add(seriesModel);
+        for ( com.twillmott.traktbrowser.domain.TvShow tvShow : tvShows) {
+            TvShow tvShowModel = new TvShow();
+            tvShowModel.setName(tvShow.getTitle());
+            tvShowModel.setWatched(tvShow.getLastWatched() != null);
+            tvShowModel.setSeasons(tvService.getAllSeasonsForTvShow(tvShow, false).size());
+            tvShowModels.add(tvShowModel);
         }
 
-        model.addAttribute("series", seriesModels);
+        model.addAttribute("tvShow", tvShowModels);
 
         return "tvshows";
     }
 
+    /**
+     * Mapping for the request button.
+     */
     @RequestMapping(value = "/tvshows/refresh.htm", method = RequestMethod.GET)
     @Async
     public String refreshLibrary(HttpServletRequest request,
                                  HttpServletResponse response) throws Exception {
-        traktService.synchronizeSeriesWatchStatus();
+        traktService.synchronizeTvShowWatchStatus();
         // Redirect back to the TV shows page
-        return "redirect:";
+        return "redirect:/tvshows.html";
     }
 }

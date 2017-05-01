@@ -13,13 +13,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * Created using this tutorial: https://spring.io/guides/gs/serving-web-content/
  *
+ * A controller for the overview page.
+ *
  * Created by tomwi on 06/12/2016.
  */
 @Controller
 public class OverviewController {
 
+    // Injected dependencies
     private TraktService traktService;
 
+    // Temporary counter for counting page refreshes.
     private int i = 0;
 
     @Autowired
@@ -52,7 +56,7 @@ public class OverviewController {
         if (accessToken == null) {
             return "redirect:authFailure"; // Authentication failure :(
         } else {
-            return "redirect:"; // Redirect back to the main overview page.
+            return "redirect:/overview.html"; // Redirect back to the main overview page.
         }
     }
 

@@ -2,11 +2,11 @@ package com.twillmott.traktbrowser.service;
 
 import com.twillmott.traktbrowser.domain.Episode;
 import com.twillmott.traktbrowser.domain.Season;
-import com.twillmott.traktbrowser.domain.Series;
+import com.twillmott.traktbrowser.domain.TvShow;
 import com.twillmott.traktbrowser.repository.AccessTokenRepository;
 import com.twillmott.traktbrowser.repository.EpisodeRepository;
 import com.twillmott.traktbrowser.repository.SeasonRepository;
-import com.twillmott.traktbrowser.repository.SeriesRepository;
+import com.twillmott.traktbrowser.repository.TvShowRepository;
 import com.uwetrottmann.trakt5.TraktV2;
 import com.uwetrottmann.trakt5.entities.AccessToken;
 import com.uwetrottmann.trakt5.entities.BaseEpisode;
@@ -34,34 +34,35 @@ import java.util.*;
 @Component
 public class TraktService {
 
+    private static final Log LOG = LogFactory.getLog(TraktService.class);
+
     // The access token that holds the trakt authentication.
     private AccessToken accessToken;
-
     // Specific to this application.
     private static String CLIENT_ID = "033be5bf9ab8eb35954fdc9a5aaf5008768705bd13928431be2530c7005bcf0d";
     private static String CLIENT_SECRET = "6c314152776403a9acadf53ee156de377bfe650a8cd66109836b15beb7fb0f00";
+
     private static String REDIRECT_URL = "http://127.0.0.1:8080/overview/auth";
 
     // Library used to communicate with trakt.
     private TraktV2 trakt = new TraktV2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
-
     // Injected dependencies
     private AccessTokenRepository accessTokenDao;
     private Mapper mapper;
-    private SeriesRepository seriesRepository;
+    private TvShowRepository tvShowRepository;
     private SeasonRepository seasonRepository;
-    private EpisodeRepository episodeRepository;
 
-    Log log = LogFactory.getLog(TraktService.class);
+    private EpisodeRepository episodeRepository;
 
     // TODO use the refresh token to refresh our access token.
     @Autowired
-    public TraktService(AccessTokenRepository accessTokenDao, Mapper mapper, SeriesRepository seriesRepository, SeasonRepository seasonRepository, EpisodeRepository episodeRepository) {
+    public TraktService(AccessTokenRepository accessTokenDao, Mapper mapper, TvShowRepository tvShowRepository, SeasonRepository seasonRepository, EpisodeRepository episodeRepository) {
         this.accessTokenDao = accessTokenDao;
         this.mapper = mapper;
-        this.seriesRepository = seriesRepository;
+        this.tvShowRepository = tvShowRepository;
         this.seasonRepository = seasonRepository;
         this.episodeRepository = episodeRepository;
+
         // Try getting the access token from the database. If we don't have one, we'll have to authenticate.
         if (!accessTokenDao.findAll().isEmpty()) {
             accessToken = accessTokenDao.findAll().get(0).mapToTraktToken();
@@ -116,38 +117,38 @@ public class TraktService {
 
 
     /**
-     * Go through the database, and the watched status of all Series, Seasons and Episodes.
+     * Go through the database, and the watched status of all TvShow, Seasons and Episodes.
      */
     @Async
-    public void synchronizeSeriesWatchStatus() {
+    public void synchronizeTvShowWatchStatus() {
 
         // Delete all watched info.
-        seriesRepository.deleteAll();
+        tvShowRepository.deleteAll();
         seasonRepository.deleteAll();
         episodeRepository.deleteAll();
 
-        // Get all the users watched series.
+        // Get all the users watched TV Shows.
         List<BaseShow> watchedShows = getShowWatched();
 
-        // Loop through all watched series
+        // Loop through all watched TV Shows
         for (BaseShow traktShow : watchedShows) {
 
-            // Load the series and mark it was watched.
-//            Series series = seriesRepository.findByExternalIds_TraktId(traktShow.show.ids.trakt).get(0);
-            Series series = new Series();
-            series.setTitle(traktShow.show.title);
-            series.setLastWatched(traktShow.last_watched_at);
-            series.setPlays(traktShow.plays);
-            seriesRepository.save(series);
+            // Load the tvShow and mark it was watched.
+//            TvShow tvShow = tvShowRepository.findByExternalIds_TraktId(traktShow.show.ids.trakt).get(0);
+            TvShow tvShow = new TvShow();
+            tvShow.setTitle(traktShow.show.title);
+            tvShow.setLastWatched(traktShow.last_watched_at);
+            tvShow.setPlays(traktShow.plays);
+            tvShowRepository.save(tvShow);
 
             // Loop through all seasons
             for (com.uwetrottmann.trakt5.entities.BaseSeason traktSeason : traktShow.seasons) {
 
                 // Trakt library doesn't give season watched info, so can't update that.
-//                Season season = seasonRepository.findBySeriesAndSeasonNumber(series, traktSeason.number).get(0);
+//                Season season = seasonRepository.findByTvShowAndSeasonNumber(tvShow, traktSeason.number).get(0);
                 Season season = new Season();
                 season.setSeasonNumber(traktSeason.number);
-                season.setSeries(series);
+                season.setTvShow(tvShow);
                 seasonRepository.save(season);
 
                 // Loop through all the episodes in this season
@@ -174,7 +175,7 @@ public class TraktService {
             if (response.isSuccessful()) {
                 return response.body();
             }
-            log.error(response.errorBody().string());
+            LOG.error(response.errorBody().string());
             return new ArrayList<>();
         } catch (IOException e) {
             e.printStackTrace();
@@ -192,7 +193,7 @@ public class TraktService {
             if (response.isSuccessful()) {
                 return response.body();
             }
-            log.error(response.errorBody().string());
+            LOG.error(response.errorBody().string());
             return new ArrayList<>();
         } catch (IOException e) {
             e.printStackTrace();
@@ -210,7 +211,7 @@ public class TraktService {
             if (response.isSuccessful()) {
                 return response.body();
             }
-            log.error(response.errorBody().string());
+            LOG.error(response.errorBody().string());
             return new ArrayList<>();
         } catch (IOException e) {
             e.printStackTrace();

@@ -99,14 +99,14 @@
                         <table class="table table-bordered table-hover">
                             <thead>
                             <tr>
-                                <th>Series</th>
+                                <th>TV Show</th>
                                 <th>Seasons</th>
                                 <th>Continuing</th>
                                 <th>Watched</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="show : ${series}">
+                            <tr th:each="show : ${tvShow}">
                                 <td th:text="${show.name}">&nbsp;</td>
                                 <td th:text="${show.seasons}">&nbsp;</td>
                                 <td th:text="${show.continuing}">&nbsp;</td>

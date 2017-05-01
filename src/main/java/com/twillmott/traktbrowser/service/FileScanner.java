@@ -2,6 +2,7 @@ package com.twillmott.traktbrowser.service;
 
 import com.google.common.collect.Lists;
 import com.twillmott.traktbrowser.model.FileEpisode;
+import com.twillmott.traktbrowser.utils.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -23,7 +24,7 @@ import java.util.stream.Stream;
  */
 public class FileScanner {
 
-    private static Log log = LogFactory.getLog(FileScanner.class);
+    private static Log LOG = LogFactory.getLog(FileScanner.class);
 
     // Regex used to scan TV shows and Media.
     public static final String[] REGEX = {
@@ -59,12 +60,12 @@ public class FileScanner {
                     FileEpisode episode = parseEpisodeFilename(filePath.toString());
                     if (episode != null) {
                         files.add(episode);
-                        log.info("Episode detected: " + episode.toString());
+                        LOG.info("Episode detected: " + episode.toString());
                     }
                 }
             });
         } catch (Exception e) {
-            log.error(e.fillInStackTrace());
+            LOG.error(e.fillInStackTrace());
         }
         return files;
     }
@@ -139,7 +140,7 @@ public class FileScanner {
             if (parentName.toLowerCase().startsWith("season")) {
                 parentName = file.getParentFile().getParentFile().getName();
             }
-            log.info("Appending parent directory '" + parentName + "' to filename '" + fileName + "'");
+            LOG.info("Appending parent directory '" + parentName + "' to filename '" + fileName + "'");
             return parentName + " " + fileName;
         } else {
             return fileName;

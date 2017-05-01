@@ -7,7 +7,7 @@ import javax.persistence.Id;
 
 
 /**
- * Entity relating to {@link com.uwetrottmann.trakt5.entities.AccessToken}.
+ * Entity relating to {@link com.uwetrottmann.trakt5.entities.AccessToken}. For saving trakt auth.
  */
 @Entity
 public class AccessToken {
