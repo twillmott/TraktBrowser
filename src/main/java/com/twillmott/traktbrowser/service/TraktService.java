@@ -46,19 +46,28 @@ public class TraktService {
 
     // Library used to communicate with trakt.
     private TraktV2 trakt = new TraktV2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
+
     // Injected dependencies
     private AccessTokenRepository accessTokenDao;
     private Mapper mapper;
+    private TvService tvService;
     private TvShowRepository tvShowRepository;
     private SeasonRepository seasonRepository;
-
     private EpisodeRepository episodeRepository;
 
     // TODO use the refresh token to refresh our access token.
     @Autowired
-    public TraktService(AccessTokenRepository accessTokenDao, Mapper mapper, TvShowRepository tvShowRepository, SeasonRepository seasonRepository, EpisodeRepository episodeRepository) {
+    public TraktService(
+            AccessTokenRepository accessTokenDao,
+            Mapper mapper,
+            TvService tvService,
+            TvShowRepository tvShowRepository,
+            SeasonRepository seasonRepository,
+            EpisodeRepository episodeRepository)
+    {
         this.accessTokenDao = accessTokenDao;
         this.mapper = mapper;
+        this.tvService = tvService;
         this.tvShowRepository = tvShowRepository;
         this.seasonRepository = seasonRepository;
         this.episodeRepository = episodeRepository;
@@ -123,9 +132,7 @@ public class TraktService {
     public void synchronizeTvShowWatchStatus() {
 
         // Delete all watched info.
-        tvShowRepository.deleteAll();
-        seasonRepository.deleteAll();
-        episodeRepository.deleteAll();
+        tvService.deleteAll();
 
         // Get all the users watched TV Shows.
         List<BaseShow> watchedShows = getShowWatched();

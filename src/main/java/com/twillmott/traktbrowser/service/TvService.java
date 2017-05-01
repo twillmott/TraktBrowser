@@ -43,7 +43,6 @@ public class TvService {
         }
     }
 
-
     /**
      * Get all seasons for a given tvShow.
      * If watched is true, only watched data will be returned.
@@ -56,4 +55,12 @@ public class TvService {
         }
     }
 
+    /**
+     * Delete all TV data from the database, ready for a full refresh.
+     */
+    public void deleteAll() {
+        tvShowRepository.deleteAll();
+        seasonRepository.deleteAll();
+        episodeRepository.deleteAll();
+    }
 }
