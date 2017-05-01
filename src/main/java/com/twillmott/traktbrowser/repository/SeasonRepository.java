@@ -15,4 +15,5 @@ import java.util.List;
 public interface SeasonRepository extends JpaRepository<Season, Long>{
 
     List<Season> findBySeriesAndSeasonNumber(Series series,int seasonNumber);
+    List<Season> findBySeries(Series series);
 }

@@ -13,7 +13,7 @@ import javax.persistence.Id;
 public class AccessToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private String access_token;
     private String token_type;

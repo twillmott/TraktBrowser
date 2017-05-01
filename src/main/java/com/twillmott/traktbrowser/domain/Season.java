@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class Season {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @OneToOne

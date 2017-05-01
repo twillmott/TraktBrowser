@@ -2,7 +2,10 @@ package com.twillmott.traktbrowser.controller;
 
 import com.google.common.collect.Lists;
 import com.twillmott.traktbrowser.model.Series;
+import com.twillmott.traktbrowser.repository.SeriesRepository;
+import com.twillmott.traktbrowser.service.FileScanner;
 import com.twillmott.traktbrowser.service.TraktService;
+import com.twillmott.traktbrowser.service.TvService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
@@ -22,10 +25,12 @@ import java.util.List;
 public class SeriesController {
 
     TraktService traktService;
+    TvService tvService;
 
     @Autowired
-    SeriesController(TraktService traktService) {
+    SeriesController(TraktService traktService, TvService tvService) {
         this.traktService = traktService;
+        this.tvService = tvService;
     }
 
     @RequestMapping(value = "/tvshows", method = RequestMethod.GET)
@@ -34,21 +39,23 @@ public class SeriesController {
 //        fs.getTvShows();
 //        traktService.synchronizeSeriesWatchStatus();
 
-        Series series1 = new Series();
-        series1.setName("Breaking Bad");
-        series1.setSeasons(10);
-        series1.setContinuing(true);
-        series1.setWatched(false);
+        // Scan for tv shows on the drive
+        FileScanner fileScanner = new FileScanner();
+        fileScanner.getTvShows();
 
-        Series series2 = new Series();
-        series2.setName("New Girl");
-        series2.setSeasons(12);
-        series2.setContinuing(false);
-        series2.setWatched(true);
+        // Populate the screen with all watched shows
+        List<com.twillmott.traktbrowser.domain.Series> userSeriesList = tvService.getAllUserSeries(false);
+        List<Series> seriesModels = Lists.newArrayList();
 
-        List<Series> series = Lists.newArrayList(series1, series2);
+        for ( com.twillmott.traktbrowser.domain.Series userSeries : userSeriesList) {
+            Series seriesModel = new Series();
+            seriesModel.setName(userSeries.getTitle());
+            seriesModel.setWatched(userSeries.getLastWatched() != null);
+            seriesModel.setSeasons(tvService.getAllSeasonsForSeries(userSeries, false).size());
+            seriesModels.add(seriesModel);
+        }
 
-        model.addAttribute("series", series);
+        model.addAttribute("series", seriesModels);
 
         return "tvshows";
     }

@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class Series {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     /**

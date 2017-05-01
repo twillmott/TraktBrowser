@@ -49,16 +49,16 @@ public class FileScanner {
     /**
      * Get all TV shows within a directory, expressed as a {@link FileEpisode}.
      */
-    public static List<String> getTvShows() {
+    public static List<FileEpisode> getTvShows() {
 
-        List<String> files = Lists.newArrayList();
+        List<FileEpisode> files = Lists.newArrayList();
 
-        try(Stream<Path> paths = Files.walk(Paths.get("C:\\Test\\TV"))) {
+        try(Stream<Path> paths = Files.walk(Paths.get("D:\\TV Shows"))) {
             paths.forEach(filePath -> {
                 if (Files.isRegularFile(filePath)) {
                     FileEpisode episode = parseEpisodeFilename(filePath.toString());
                     if (episode != null) {
-                        files.add(episode.toString());
+                        files.add(episode);
                         log.info("Episode detected: " + episode.toString());
                     }
                 }

@@ -114,6 +114,7 @@ public class TraktService {
         return accessToken != null && accessToken.access_token != null;
     }
 
+
     /**
      * Go through the database, and the watched status of all Series, Seasons and Episodes.
      */
@@ -121,7 +122,9 @@ public class TraktService {
     public void synchronizeSeriesWatchStatus() {
 
         // Delete all watched info.
-        // TODO
+        seriesRepository.deleteAll();
+        seasonRepository.deleteAll();
+        episodeRepository.deleteAll();
 
         // Get all the users watched series.
         List<BaseShow> watchedShows = getShowWatched();
@@ -130,7 +133,9 @@ public class TraktService {
         for (BaseShow traktShow : watchedShows) {
 
             // Load the series and mark it was watched.
-            Series series = seriesRepository.findByExternalIds_TraktId(traktShow.show.ids.trakt).get(0);
+//            Series series = seriesRepository.findByExternalIds_TraktId(traktShow.show.ids.trakt).get(0);
+            Series series = new Series();
+            series.setTitle(traktShow.show.title);
             series.setLastWatched(traktShow.last_watched_at);
             series.setPlays(traktShow.plays);
             seriesRepository.save(series);
@@ -139,13 +144,20 @@ public class TraktService {
             for (com.uwetrottmann.trakt5.entities.BaseSeason traktSeason : traktShow.seasons) {
 
                 // Trakt library doesn't give season watched info, so can't update that.
-                Season season = seasonRepository.findBySeriesAndSeasonNumber(series, traktSeason.number).get(0);
+//                Season season = seasonRepository.findBySeriesAndSeasonNumber(series, traktSeason.number).get(0);
+                Season season = new Season();
+                season.setSeasonNumber(traktSeason.number);
+                season.setSeries(series);
+                seasonRepository.save(season);
 
                 // Loop through all the episodes in this season
                 for (BaseEpisode traktEpisode : traktSeason.episodes) {
-                    Episode episode = episodeRepository.findBySeasonAndEpisodeNumber(season, traktEpisode.number).get(0);
+//                    Episode episode = episodeRepository.findBySeasonAndEpisodeNumber(season, traktEpisode.number).get(0);
+                    Episode episode = new Episode();
+                    episode.setEpisodeNumber(traktEpisode.number);
                     episode.setLastWatched(traktEpisode.last_watched_at);
                     episode.setPlays(traktEpisode.plays);
+                    episode.setSeason(season);
                     episodeRepository.save(episode);
                 }
             }

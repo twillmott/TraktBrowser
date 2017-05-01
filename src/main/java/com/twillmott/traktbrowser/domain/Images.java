@@ -14,7 +14,7 @@ import javax.persistence.Id;
 public class Images {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private String bannerUrl;
     private String thumbnailUrl;

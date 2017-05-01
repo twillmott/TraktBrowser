@@ -48,10 +48,9 @@
             <version>5.4.0</version>
         </dependency>
 
-        <!--H2 Database - This will probably be changed -->
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
         <!--Google Guava-->

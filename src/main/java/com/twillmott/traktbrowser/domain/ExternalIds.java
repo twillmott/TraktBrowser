@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class ExternalIds {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     @Mapping(value = "trakt")
     private Integer traktId;
