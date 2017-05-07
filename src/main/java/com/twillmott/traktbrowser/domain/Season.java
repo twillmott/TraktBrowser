@@ -1,5 +1,7 @@
 package com.twillmott.traktbrowser.domain;
 
+import org.dozer.Mapping;
+
 import javax.persistence.*;
 
 /**
@@ -13,10 +15,12 @@ public class Season {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "external_ids_id")
+    @Mapping(value = "ids")
     private ExternalIds externalIds;
 
+    @Mapping(value = "number")
     private int seasonNumber;
 
     /**
@@ -29,6 +33,13 @@ public class Season {
     @OneToOne
     @JoinColumn(name = "images_id")
     private Images images;
+
+    @Mapping(value = "episode_count")
+    private int episodes;
+
+
+    @Mapping(value = "rating")
+    private double rating;
 
 
     public Season() {}
@@ -78,6 +89,22 @@ public class Season {
 
     public void setImages(Images images) {
         this.images = images;
+    }
+
+    public int getEpisodes() {
+        return episodes;
+    }
+
+    public void setEpisodes(int episodes) {
+        this.episodes = episodes;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 }
 

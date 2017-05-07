@@ -17,18 +17,23 @@ public class Episode {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Mapping(value = "number")
     private int episodeNumber;
 
+    @Mapping(value = "title")
     private String title;
 
     @OneToOne
     @JoinColumn(name = "season_id")
     private Season season;
 
+    @Column(length=1000000)
+    @Mapping(value = "overview")
     private String overview;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "external_ids_id")
+    @Mapping(value = "ids")
     private ExternalIds externalIds;
 
     @OneToOne
@@ -46,6 +51,9 @@ public class Episode {
     private DateTime airedOn;
 
     private int plays;
+
+    @Mapping(value = "rating")
+    private double rating;
 
     public long getId() {
         return id;
@@ -65,7 +73,8 @@ public class Episode {
 
     public Episode() {}
 
-    public Episode(int episodeNumber, String title, Season season, String overview, ExternalIds externalIds, Images images, DateTime lastWatched, DateTime lastCollected, DateTime airedOn) {
+    public Episode(long id, int episodeNumber, String title, Season season, String overview, ExternalIds externalIds, Images images, DateTime lastWatched, DateTime lastCollected, DateTime airedOn, int plays, double rating) {
+        this.id = id;
         this.episodeNumber = episodeNumber;
         this.title = title;
         this.season = season;
@@ -75,6 +84,8 @@ public class Episode {
         this.lastWatched = lastWatched;
         this.lastCollected = lastCollected;
         this.airedOn = airedOn;
+        this.plays = plays;
+        this.rating = rating;
     }
 
     public int getEpisodeNumber() {
@@ -147,5 +158,13 @@ public class Episode {
 
     public void setAiredOn(DateTime airedOn) {
         this.airedOn = airedOn;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 }

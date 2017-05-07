@@ -24,7 +24,7 @@ public class ExternalIds {
     private Integer tvdbId;
     @Mapping(value = "tvrage")
     private Integer tvrageId;
-    @Mapping(value = "imdb")
+//    @Mapping(value = "imdb")
     private String imdbId;
 
     public ExternalIds() {}

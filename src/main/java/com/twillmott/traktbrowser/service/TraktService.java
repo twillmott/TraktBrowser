@@ -3,16 +3,16 @@ package com.twillmott.traktbrowser.service;
 import com.twillmott.traktbrowser.domain.Episode;
 import com.twillmott.traktbrowser.domain.Season;
 import com.twillmott.traktbrowser.domain.TvShow;
+import com.twillmott.traktbrowser.model.FileEpisode;
 import com.twillmott.traktbrowser.repository.AccessTokenRepository;
 import com.twillmott.traktbrowser.repository.EpisodeRepository;
 import com.twillmott.traktbrowser.repository.SeasonRepository;
 import com.twillmott.traktbrowser.repository.TvShowRepository;
 import com.uwetrottmann.trakt5.TraktV2;
-import com.uwetrottmann.trakt5.entities.AccessToken;
-import com.uwetrottmann.trakt5.entities.BaseEpisode;
-import com.uwetrottmann.trakt5.entities.BaseShow;
-import com.uwetrottmann.trakt5.entities.UserSlug;
+import com.uwetrottmann.trakt5.entities.*;
 import com.uwetrottmann.trakt5.enums.Extended;
+import com.uwetrottmann.trakt5.enums.Type;
+import javafx.util.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
@@ -50,10 +50,10 @@ public class TraktService {
     // Injected dependencies
     private AccessTokenRepository accessTokenDao;
     private Mapper mapper;
-    private TvService tvService;
     private TvShowRepository tvShowRepository;
     private SeasonRepository seasonRepository;
     private EpisodeRepository episodeRepository;
+    private TvService tvService;
 
     // TODO use the refresh token to refresh our access token.
     @Autowired
@@ -301,5 +301,86 @@ public class TraktService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Given a file episode, search for the trakt episode. This episode will also return the trakt id of the
+     * @return A pair containing the episode itself, and the trakt id (integer).
+     */
+    public Pair<Episode, Integer> searchForEpisode(FileEpisode fileEpisode) {
+
+        // Get the show ID
+        Show show = new Show();
+        try {
+            Response<List<SearchResult>> response = trakt.search().textQuery(fileEpisode.getShowName(), Type.SHOW, null, null, null).execute();
+            if (response.isSuccessful()) {
+                show = response.body().get(0).show;
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        // Get the episode
+        com.uwetrottmann.trakt5.entities.Episode traktEpisode;
+        try {
+            Response<com.uwetrottmann.trakt5.entities.Episode> response = trakt.episodes().summary(show.ids.trakt.toString(), fileEpisode.getSeasonNumber(), fileEpisode.getEpisodeNumber(), Extended.FULL).execute();
+            if (response.isSuccessful()) {
+                traktEpisode = response.body();
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        if (traktEpisode != null) {
+            return new Pair<>(mapper.map(traktEpisode, Episode.class), show.ids.trakt);
+        }
+        return null;
+    }
+
+    /**
+     * Get a {@link TvShow} for a given trakt id.
+     */
+    public TvShow getTvShow(Integer showId) {
+
+        try {
+            Response<Show> response = trakt.shows().summary(showId.toString(), Extended.FULL).execute();
+            if (response.isSuccessful()) {
+                return mapper.map(response.body(), TvShow.class);
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
+     * Get a {@link Season} for a given series and season number.
+     */
+    public Season getSeason(Integer showId, int seasonNumber) {
+
+        try {
+            Response<List<com.uwetrottmann.trakt5.entities.Season>> response = trakt.seasons().summary(showId.toString(), Extended.FULL).execute();
+            if (response.isSuccessful()) {
+
+                List<com.uwetrottmann.trakt5.entities.Season> seasons = response.body();
+
+                for (com.uwetrottmann.trakt5.entities.Season season : seasons) {   // TODO Java8 Streams
+                    if (season.number == seasonNumber) {
+                        return mapper.map(season, Season.class);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

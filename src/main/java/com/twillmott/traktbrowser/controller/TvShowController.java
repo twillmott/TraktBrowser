@@ -26,11 +26,13 @@ public class TvShowController {
     // Injected dependencies
     private TraktService traktService;
     private TvService tvService;
+    private FileScanner fileScanner;
 
     @Autowired
-    TvShowController(TraktService traktService, TvService tvService) {
+    TvShowController(TraktService traktService, TvService tvService, FileScanner fileScanner) {
         this.traktService = traktService;
         this.tvService = tvService;
+        this.fileScanner = fileScanner;
     }
 
 
@@ -44,7 +46,7 @@ public class TvShowController {
 //        traktService.synchronizeTvShowWatchStatus();
 
         // Scan for tv shows on the drive
-        FileScanner.getTvShows();
+        fileScanner.getTvShows();
 
         // Populate the screen with all watched shows
         List<com.twillmott.traktbrowser.domain.TvShow> tvShows = tvService.getAllUserTvShows(false);

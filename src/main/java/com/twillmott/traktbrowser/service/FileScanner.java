@@ -1,16 +1,27 @@
 package com.twillmott.traktbrowser.service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.twillmott.traktbrowser.domain.Episode;
+import com.twillmott.traktbrowser.domain.Season;
+import com.twillmott.traktbrowser.domain.TvShow;
 import com.twillmott.traktbrowser.model.FileEpisode;
+import com.twillmott.traktbrowser.repository.EpisodeRepository;
+import com.twillmott.traktbrowser.repository.SeasonRepository;
+import com.twillmott.traktbrowser.repository.TvShowRepository;
 import com.twillmott.traktbrowser.utils.StringUtils;
+import javafx.util.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -22,6 +33,7 @@ import java.util.stream.Stream;
  *
  * Created by tomwi on 31/12/2016.
  */
+@Component
 public class FileScanner {
 
     private static Log LOG = LogFactory.getLog(FileScanner.class);
@@ -47,19 +59,35 @@ public class FileScanner {
         }
     }
 
+    // Injected dependencies
+    TraktService traktService;
+    private TvShowRepository tvShowRepository;
+    private SeasonRepository seasonRepository;
+    private EpisodeRepository episodeRepository;
+
+    FileScanner (TraktService traktService,
+                 TvShowRepository tvShowRepository,
+                 SeasonRepository seasonRepository,
+                 EpisodeRepository episodeRepository) {
+        this.traktService = traktService;
+        this.tvShowRepository = tvShowRepository;
+        this.seasonRepository = seasonRepository;
+        this.episodeRepository = episodeRepository;
+    }
+
     /**
      * Get all TV shows within a directory, expressed as a {@link FileEpisode}.
      */
-    public static List<FileEpisode> getTvShows() {
+    public List<Episode> getTvShows() {
 
-        List<FileEpisode> files = Lists.newArrayList();
+        List<FileEpisode> episodeFiles = Lists.newArrayList();
 
         try(Stream<Path> paths = Files.walk(Paths.get("D:\\TV Shows"))) {
             paths.forEach(filePath -> {
                 if (Files.isRegularFile(filePath)) {
                     FileEpisode episode = parseEpisodeFilename(filePath.toString());
                     if (episode != null) {
-                        files.add(episode);
+                        episodeFiles.add(episode);
                         LOG.info("Episode detected: " + episode.toString());
                     }
                 }
@@ -67,7 +95,59 @@ public class FileScanner {
         } catch (Exception e) {
             LOG.error(e.fillInStackTrace());
         }
-        return files;
+
+        // Go through each of the episodes we've found, and search for it in Trakt.
+        List<Episode> episodes = Lists.newArrayList();
+        Map<String, Season> seasons = Maps.newHashMap(); // Key is the show id with season number appended
+        Map<Integer, TvShow> tvShows = Maps.newHashMap();
+
+        // TODO combine this with the above. Actually, we might need to stay like this to minimise trakt API calls.
+        for (FileEpisode fileEpisode : episodeFiles) {
+
+            Pair<Episode, Integer> episodeShowPair = traktService.searchForEpisode(fileEpisode);
+            Episode episode = episodeShowPair.getKey();
+            Integer showId = episodeShowPair.getValue();
+            // Set collected time to now. Collected times will be updated from trakt later.
+            episode.setLastCollected(DateTime.now());
+
+            // We now need to link the season and TV show to the episode. The season and tv show may not yet be in the database.
+            TvShow tvShow;
+            // Check if we've already loaded the show
+            if (tvShows.containsKey(showId)) {
+                tvShow = tvShows.get(showId);
+            // If not, get the show from the database
+            } else if (!tvShowRepository.findByExternalIds_TraktId(showId).isEmpty()){
+                tvShow = tvShowRepository.findByExternalIds_TraktId(showId).get(0);
+            // If not in db, make a new one
+            } else {
+                tvShow = traktService.getTvShow(showId);
+                tvShowRepository.save(tvShow);
+                tvShows.put(showId, tvShow);
+            }
+
+            // Now do the same with seasons
+            Season season;
+            String seasonKey = showId.toString().concat(Integer.toString(fileEpisode.getSeasonNumber()));
+            if (seasons.containsKey(seasonKey)) {
+                season = seasons.get(seasonKey);
+            } else if (!seasonRepository.findByTvShowAndSeasonNumber(tvShow, fileEpisode.getSeasonNumber()).isEmpty()) {
+                season = seasonRepository.findByTvShowAndSeasonNumber(tvShow, fileEpisode.getSeasonNumber()).get(0);
+            } else {
+                season = traktService.getSeason(tvShow.getExternalIds().getTraktId(), fileEpisode.getSeasonNumber());
+                season.setTvShow(tvShow);
+                seasonRepository.save(season);
+                seasons.put(seasonKey, season);
+            }
+
+            episode.setSeason(season);
+            episodeRepository.save(episode);
+
+
+
+            episodes.add(episode);
+        }
+
+        return episodes;
     }
 
     /**

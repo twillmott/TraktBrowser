@@ -1,5 +1,6 @@
 package com.twillmott.traktbrowser.domain;
 
+import org.dozer.Mapping;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
@@ -19,12 +20,18 @@ public class TvShow {
     /**
      * The main title of the series.
      */
+
+    @Mapping(value = "title")
     private String title;
 
+
+    @Column(length=1000000)
+    @Mapping(value = "overview")
     private String overview;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "external_ids_id")
+    @Mapping(value = "ids")
     private ExternalIds externalIds;
 
     @OneToOne
@@ -44,6 +51,19 @@ public class TvShow {
 
     private int plays;
 
+    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+    @Mapping(value = "first_aired")
+    private DateTime airedOn;
+
+    @Mapping(value = "network")
+    private String network;
+
+    @Mapping(value = "trailer")
+    private String trailer;
+
+    @Mapping(value = "rating")
+    private double rating;
+
     public int getPlays() {
         return plays;
     }
@@ -53,14 +73,6 @@ public class TvShow {
     }
 
     public TvShow() {}
-
-    public TvShow(String title, String overview, ExternalIds externalIds, Images images, Long nextEpisode) {
-        this.title = title;
-        this.overview = overview;
-        this.externalIds = externalIds;
-        this.images = images;
-        this.nextEpisode = nextEpisode;
-    }
 
     public long getId() {
         return id;
@@ -124,5 +136,37 @@ public class TvShow {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public DateTime getAiredOn() {
+        return airedOn;
+    }
+
+    public void setAiredOn(DateTime airedOn) {
+        this.airedOn = airedOn;
+    }
+
+    public String getNetwork() {
+        return network;
+    }
+
+    public void setNetwork(String network) {
+        this.network = network;
+    }
+
+    public String getTrailer() {
+        return trailer;
+    }
+
+    public void setTrailer(String trailer) {
+        this.trailer = trailer;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 }
